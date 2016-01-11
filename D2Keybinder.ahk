@@ -31,7 +31,10 @@ b::ToggleShowItems()
 CastLeftAttack()
     {
         while(GetKeyState("XButton1","P")) {
-            Send, +{Click}
+            mod := ""
+            if(GetKeyState("Shift","P"))
+                mod := "+"
+            Send, %mod%{Click}
             Sleep, 25
         }
     }
@@ -44,7 +47,10 @@ Cast(outKey)
            Send, {Alt Up}
        if (LAST_SKILL_KEY != outKey)
            Send, {%outKey%}
-       Send, {Click Right}
+        mod := ""
+        if(GetKeyState("Shift","P"))
+            mod := "+"
+       Send, %mod%{Click Right}
        LAST_SKILL_KEY := outKey
        if(TOGGLE_SHOW_ITEMS)
            Send, {Alt Down}
