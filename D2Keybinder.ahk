@@ -6,7 +6,7 @@ SetWorkingDir %A_ScriptDir%
 
 ; --- GENERAL PROGRAM HOTKEYS
 
-^t::reload
+^b::reload
 ^g::ShowGui()
 pause::Suspend
 
@@ -18,6 +18,7 @@ pause::Suspend
 ^w::Send w
 ^r::Send r
 ^a::Send a
+^t::Transmute()
 b::Send i
 
 *xbutton1::CastLeftAttack()
@@ -162,11 +163,75 @@ ShowGui()
       Gui, Destroy
       Gui, font, w1000 cBlack s15
       Gui, Add, Text, ,D2 Keybinder v%VERSION%
-      Gui, Add, Picture, Center, KeyMap.png
+      Gui, Add, Picture, Center, resources/KeyMap.png
       Gui, Show, Center AutoSize, D2 Keybinder v%VERSION%
     }
     else 
     {
       Gui, Destroy
+    }
+  }
+
+Transmute()
+  {
+    global OLD_MOUSE_POSITION_X
+    global OLD_MOUSE_POSITION_Y
+    global TRANSMUTE_BUTTON_X
+    global TRANSMUTE_BUTTON_Y
+    global DROP_LOCATION_X
+    global DROP_LOCATION_Y
+    global CHECK_LOCATION_X
+    global CHECK_LOCATION_Y
+    global IS_CHECKING_ITEM
+    if (!IS_CHECKING_ITEM && TRANSMUTE_BUTTON_X && TRANSMUTE_BUTTON_Y && DROP_LOCATION_X && DROP_LOCATION_Y && CHECK_LOCATION_X && CHECK_LOCATION_Y)
+    {
+      MouseGetPos, OLD_MOUSE_POSITION_X, OLD_MOUSE_POSITION_Y, , , 
+      SendEvent {Click Left}
+      MouseMove, % DROP_LOCATION_X, % DROP_LOCATION_Y, , 
+      Sleep 100
+      SendEvent {Click Left}
+      MouseMove, % TRANSMUTE_BUTTON_X, % TRANSMUTE_BUTTON_Y, ,
+      Sleep 100
+      SendEvent {Click Left}
+      MouseMove, % CHECK_LOCATION_X, % CHECK_LOCATION_Y, ,
+      IS_CHECKING_ITEM := true
+    }
+    else if (IS_CHECKING_ITEM)
+    {
+      MouseMove, % OLD_MOUSE_POSITION_X, % OLD_MOUSE_POSITION_Y, ,
+      IS_CHECKING_ITEM := false
+    }
+    else 
+    {
+      if(!TRANSMUTE_BUTTON_X || !TRANSMUTE_BUTTON_Y)
+      {
+        MsgBox, , Move Mouse Over Transmute Button, 1. Open HORADRIC CUBE`n2. Move Mouse Over TRANSMUTE BUTTON`n3. Press F1
+        KeyWait, F1, D T10
+        if(ErrorLevel == 0)
+        {
+          MouseGetPos, TRANSMUTE_BUTTON_X, TRANSMUTE_BUTTON_Y, , , 
+          MsgBox, , DONE!, Done!`nTransmute Button Location:`nx=%TRANSMUTE_BUTTON_X% y=%TRANSMUTE_BUTTON_Y%, 1000
+        }
+      }
+      if(!DROP_LOCATION_X || !DROP_LOCATION_Y)
+      {
+        MsgBox, , Move Mouse Over Drop Location, 1. Open HORADRIC CUBE`n2. Move Mouse Over Location In Cube To Drop Item`n3. Press F1
+        KeyWait, F1, D T10
+        if(ErrorLevel == 0)
+        {
+          MouseGetPos, DROP_LOCATION_X, DROP_LOCATION_Y, , , 
+          MsgBox, , DONE!, Done!`nCube Drop Location:`nx=%DROP_LOCATION_X% y=%DROP_LOCATION_Y%, 1000
+        }
+      }
+      if(!CHECK_LOCATION_X || !CHECK_LOCATION_Y)
+      {
+        MsgBox, , Move Mouse Over Check Location, 1. Open HORADRIC CUBE`n2. Move Mouse Over Location To Hover Mouse To Check Item`n3. Press F1
+        KeyWait, F1, D T10
+        if(ErrorLevel == 0)
+        {
+          MouseGetPos, CHECK_LOCATION_X, CHECK_LOCATION_Y, , , 
+          MsgBox, , DONE!, Done!`nCube Check Location:`nx=%CHECK_LOCATION_X% y=%CHECK_LOCATION_Y%, 1000
+        }
+      }
     }
   }
