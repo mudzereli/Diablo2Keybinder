@@ -6,7 +6,7 @@ SetWorkingDir %A_ScriptDir%
 
 ; --- GENERAL PROGRAM HOTKEYS
 
-^b::reload
+^b::Reload()
 ^g::ShowGui()
 pause::Suspend
 
@@ -22,20 +22,20 @@ pause::Suspend
 b::Send i
 
 *xbutton1::CastLeftAttack()
-*q::Cast("F1")
-*w::Cast("F2")
-*e::Cast("F3")
-*r::Cast("F4")
+*q::Cast("q","F1")
+*w::Cast("w","F2")
+*e::Cast("e","F3")
+*r::Cast("r","F4")
 
-*a::Cast("F5")
-*s::Cast("F6")
-*d::Cast("F7")
-*f::Cast("F8")
+*a::Cast("a","F5")
+*s::Cast("s","F6")
+*d::Cast("d","F7")
+*f::Cast("f","F8")
 
-*z::Cast("F9")
-*x::Cast("F10")
-*c::Cast("F11")
-*v::Cast("F12")
+*z::Cast("z","F9")
+*x::Cast("x","F10")
+*c::Cast("c","F11")
+*v::Cast("v","F12")
 
 lalt::ToggleShowItems()
 *tab::FixxedTab()
@@ -60,7 +60,20 @@ numpad8::SetPlayers(8)
 ^7::SetPlayers(7)
 ^8::SetPlayers(8)
 
+~enter::ToggleChatMode()
+
 ; --- FUNCTIONS 
+Reload()
+  {
+    MsgBox, , D2 Keybinder Reloading!, D2 Keybinder is reloading in 2 seconds..., 2
+    reload
+  }
+
+ToggleChatMode()
+  {
+    global CHAT_MODE
+    CHAT_MODE := !CHAT_MODE
+  }
 
 CastLeftAttack()
     {
@@ -73,20 +86,26 @@ CastLeftAttack()
         }
     }
 
-Cast(outKey)
+Cast(inKey,outKey)
     {
-       global LAST_SKILL_KEY
-       global TOGGLE_SHOW_ITEMS
-       if(TOGGLE_SHOW_ITEMS)
+        global LAST_SKILL_KEY
+        global TOGGLE_SHOW_ITEMS
+        global CHAT_MODE
+        if(CHAT_MODE)
+        {
+          Send %inKey%
+          return
+        }
+        if(TOGGLE_SHOW_ITEMS)
            Send, {Alt Up}
-       if (LAST_SKILL_KEY != outKey)
+        if (LAST_SKILL_KEY != outKey)
            Send, {%outKey%}
         mod := ""
         if(GetKeyState("Shift","P"))
             mod := "+"
-       Send, %mod%{Click Right}
-       LAST_SKILL_KEY := outKey
-       if(TOGGLE_SHOW_ITEMS)
+        Send, %mod%{Click Right}
+        LAST_SKILL_KEY := outKey
+        if(TOGGLE_SHOW_ITEMS)
            Send, {Alt Down}
     }
 
@@ -105,6 +124,7 @@ FixxedTab()
         global TOGGLE_SHOW_ITEMS
         toggledOn := TOGGLE_SHOW_ITEMS
         toggleAlt := GetKeyState("LAlt","P")
+        SetCapsLockState Off
         if(toggledOn) 
           ToggleShowItems()
         if(toggleAlt)
@@ -123,6 +143,9 @@ FixxedTab()
 FixxedEsc()
     {
        global TOGGLE_SHOW_ITEMS
+       global CHAT_MODE
+       if(CHAT_MODE)
+          ToggleChatMode()
        if(TOGGLE_SHOW_ITEMS)
            Send, {Alt Up}
        Send, {Escape}
@@ -145,12 +168,16 @@ FixWindowSize()
 SetPlayers(playerCount)
   {
     global TOGGLE_SHOW_ITEMS
+    global CHAT_MODE
     if(TOGGLE_SHOW_ITEMS)
       ToggleShowItems()
-    Send {ENTER}
+    if(!CHAT_MODE)
+      Send {ENTER}
     Sleep 100
     Send /players %playerCount%
     Send {ENTER}
+    if(CHAT_MODE)
+      ToggleChatMode()
   }
 
 ShowGui()
@@ -164,7 +191,7 @@ ShowGui()
       Gui, font, w1000 cBlack s15
       Gui, Add, Text, ,D2 Keybinder v%VERSION%
       Gui, Add, Picture, Center, resources/KeyMap.png
-      Gui, Show, Center AutoSize, D2 Keybinder v%VERSION%
+      Gui, Show, x0 y0 AutoSize, D2 Keybinder v%VERSION%
     }
     else 
     {
@@ -210,7 +237,7 @@ Transmute()
         if(ErrorLevel == 0)
         {
           MouseGetPos, TRANSMUTE_BUTTON_X, TRANSMUTE_BUTTON_Y, , , 
-          MsgBox, , DONE!, Done!`nTransmute Button Location:`nx=%TRANSMUTE_BUTTON_X% y=%TRANSMUTE_BUTTON_Y%, 1000
+          MsgBox, , DONE!, Done!`nTransmute Button Location:`nx=%TRANSMUTE_BUTTON_X% y=%TRANSMUTE_BUTTON_Y%, 10
         }
       }
       if(!DROP_LOCATION_X || !DROP_LOCATION_Y)
@@ -220,7 +247,7 @@ Transmute()
         if(ErrorLevel == 0)
         {
           MouseGetPos, DROP_LOCATION_X, DROP_LOCATION_Y, , , 
-          MsgBox, , DONE!, Done!`nCube Drop Location:`nx=%DROP_LOCATION_X% y=%DROP_LOCATION_Y%, 1000
+          MsgBox, , DONE!, Done!`nCube Drop Location:`nx=%DROP_LOCATION_X% y=%DROP_LOCATION_Y%, 10
         }
       }
       if(!CHECK_LOCATION_X || !CHECK_LOCATION_Y)
@@ -230,7 +257,7 @@ Transmute()
         if(ErrorLevel == 0)
         {
           MouseGetPos, CHECK_LOCATION_X, CHECK_LOCATION_Y, , , 
-          MsgBox, , DONE!, Done!`nCube Check Location:`nx=%CHECK_LOCATION_X% y=%CHECK_LOCATION_Y%, 1000
+          MsgBox, , DONE!, Done!`nCube Check Location:`nx=%CHECK_LOCATION_X% y=%CHECK_LOCATION_Y%, 10
         }
       }
     }
