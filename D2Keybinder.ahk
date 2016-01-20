@@ -90,12 +90,6 @@ Cast(inKey,outKey)
     {
         global LAST_SKILL_KEY
         global TOGGLE_SHOW_ITEMS
-        global CHAT_MODE
-        if(CHAT_MODE)
-        {
-          Send %inKey%
-          return
-        }
         if(TOGGLE_SHOW_ITEMS)
            Send, {Alt Up}
         if (LAST_SKILL_KEY != outKey)
@@ -103,7 +97,8 @@ Cast(inKey,outKey)
         mod := ""
         if(GetKeyState("Shift","P"))
             mod := "+"
-        Send, %mod%{Click Right}
+        ;while(GetKeyState(inKey,"P"))
+          Send, %mod%{Click Right}
         LAST_SKILL_KEY := outKey
         if(TOGGLE_SHOW_ITEMS)
            Send, {Alt Down}
